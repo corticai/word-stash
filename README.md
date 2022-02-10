@@ -1,5 +1,7 @@
 # WordStash
 
+![Technical Architecture](./docs/images/word-stash-tech-arch.png)
+
 ## Project Description
 
 ### What Does It Do
