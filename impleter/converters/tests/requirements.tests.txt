@@ -1,0 +1,7 @@
+pytest
+pytest-mockito
+boto3
+moto
+freezegun
+spacy
+jsonschema

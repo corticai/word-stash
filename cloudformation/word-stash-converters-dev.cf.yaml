@@ -1,0 +1,612 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: WordStash converters
+Parameters:
+  BaseName:
+    Description: Base name for CF
+    Type: String
+  Environment:
+    Description: Environmnent setting (i.e. dev, prod, test)
+    Type: String
+  ImpleterConvertersLambdaLayerZipS3Key:
+    Type: String
+    Description: Impleter Converters Lambda layer zip file
+  ImpleterConvertersLambdaZipS3Key:
+    Type: String
+    Description: Impleter Converters Lambda zip file
+Resources:
+  ImpleterConvertersLambdaLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.8
+      Content:
+        S3Bucket: 
+          Fn::ImportValue: 
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterConvertersLambdaLayerZipS3Key
+      Description: Impleter lambda layer
+      LayerName: impleter-converters-lambda-packages
+      LicenseInfo: MIT
+
+  ImpleterConverterLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${BaseName}-impleter-converter-role'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com 
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+        - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
+      Policies:
+        - PolicyName: allowLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:*
+              Resource: arn:aws:logs:*:*:*
+
+  ClassCrudeToLabelFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: class_crude_to_label_lambda_function.lambda_handler
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterConvertersLambdaZipS3Key 
+      Description: converts a crude to classification label payload
+      FunctionName: 'class-crude-label-converter'
+      Role: !Sub "${ImpleterConverterLambdaRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterConvertersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  NerCrudeToLabelFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: ner_crude_to_label_lambda_function.lambda_handler
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterConvertersLambdaZipS3Key 
+      Description: converts a crude to NER label payload
+      FunctionName: 'ner-crude-label-converter'
+      Role: !Sub "${ImpleterConverterLambdaRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterConvertersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  NerLabelToTrainFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: ner_label_to_train_lambda_function.lambda_handler
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterConvertersLambdaZipS3Key 
+      Description: converts a crude to NER label payload
+      FunctionName: !Sub 'ner-label-train-converter'
+      Role: !Sub "${ImpleterConverterLambdaRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterConvertersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+  
+  SquadCrudeToLabelFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: squad_crude_to_label_lambda_function.lambda_handler
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterConvertersLambdaZipS3Key 
+      Description: converts a crude to SQuaD label payload
+      FunctionName: 'squad-crude-label-converter'
+      Role: !Sub "${ImpleterConverterLambdaRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterConvertersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  SquadLabelToTrainFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: squad_label_to_train_lambda_function.lambda_handler
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterConvertersLambdaZipS3Key 
+      Description: converts a crude to SQuaD label payload
+      FunctionName: 'squad-label-train-converter'
+      Role: !Sub "${ImpleterConverterLambdaRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterConvertersLambdaLayer
+      MemorySize: 128
+      Timeout: 900      
+
+  FireHoseBackupS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-backup-bucket"
+    DeletionPolicy: Delete
+
+  FireHoseOpenSearchPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:PutObject
+            Resource: 
+              - !Sub "${FireHoseBackupS3Bucket.Arn}"
+              - !Sub "${FireHoseBackupS3Bucket.Arn}/*"
+          - Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey
+            Resource:
+              - !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:*"
+          - Effect: Allow
+            Action:
+              - es:DescribeDomain
+              - es:DescribeDomains
+              - es:DescribeDomainConfig
+              - es:ESHttpGet
+              - es:ESHttpPost
+              - es:ESHttpPut
+            Resource:
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain"
+              - !Join ["", [Fn::ImportValue: !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain", "/*"]]
+          - Effect: Allow
+            Action:
+              - kinesis:DescribeStream
+              - kinesis:GetShardIterator
+              - kinesis:GetRecords
+              - kinesis:ListShards
+            Resource:
+              - !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:stream/*"
+          - Effect: Allow
+            Action:
+              - logs:PutLogEvents
+            Resource:
+              - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+              - lambda:GetFunctionConfiguration
+            Resource:
+              - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*"
+
+  FireHoseOpenSearchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal: 
+            Service: 
+              - "firehose.amazonaws.com"
+          Action: 
+            - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - !Ref FireHoseOpenSearchPolicy
+
+  StashLogGroup: 
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${BaseName}-log-group"
+      RetentionInDays: 30
+
+  StashLogStream: 
+    Type: AWS::Logs::LogStream
+    Properties: 
+      LogGroupName: !Ref StashLogGroup
+      LogStreamName: !Sub "${BaseName}-log-stream"
+
+  DeliveryStreamPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ec2:DescribeVpcs
+              - ec2:DescribeVpcAttribute
+              - ec2:DescribeSubnets
+              - ec2:DescribeSecurityGroups
+              - ec2:DescribeNetworkInterfaces
+              - ec2:CreateNetworkInterface
+              - ec2:CreateNetworkInterfacePermission
+              - ec2:DeleteNetworkInterface
+            Resource: 
+              - "*"  
+
+  DeliveryStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal: 
+            Service: 
+              - "firehose.amazonaws.com"
+          Action: 
+            - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - !Ref DeliveryStreamPolicy
+
+  StashLogGroup: 
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${BaseName}-log-group"
+      RetentionInDays: 30
+
+  CrudeDeliveryStream: 
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+        DeliveryStreamName: !Sub "${BaseName}-CrudeDeliveryStream"
+        ElasticsearchDestinationConfiguration: 
+          BufferingHints: 
+            IntervalInSeconds: 60
+            SizeInMBs: 50
+          CloudWatchLoggingOptions: 
+            Enabled: true
+            LogGroupName: !Ref StashLogGroup
+            LogStreamName: !Ref StashLogStream
+          DomainARN: 
+            Fn::ImportValue:
+              !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain"
+          IndexName: "crude"
+          IndexRotationPeriod: "NoRotation"
+          RetryOptions: 
+              DurationInSeconds: "60"
+          RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+          S3BackupMode: "FailedDocumentsOnly"
+          S3Configuration: 
+              BucketARN: !Sub "${FireHoseBackupS3Bucket.Arn}"
+              BufferingHints: 
+                IntervalInSeconds: "60"
+                SizeInMBs: "50"
+              CompressionFormat: "UNCOMPRESSED"
+              Prefix: "class_crude_label/"
+              RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+              CloudWatchLoggingOptions: 
+                Enabled: true
+                LogGroupName: !Sub "${BaseName}-log-group"
+                LogStreamName: !Sub "${BaseName}-log-stream"
+          VpcConfiguration:
+            RoleARN: !Sub "${DeliveryStreamRole.Arn}"
+            SecurityGroupIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:FirehoseSecurityGroupConfig"
+            SubnetIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:PrivateOpenSearchSubnetConfig"
+
+  ClassCrudeToLabelDeliveryStream: 
+    Type: AWS::KinesisFirehose::DeliveryStream
+    DependsOn: ClassCrudeToLabelFunction
+    Properties:
+        DeliveryStreamName: !Sub "${BaseName}-ClassCrudeToLabelDeliveryStream"
+        ElasticsearchDestinationConfiguration: 
+          BufferingHints: 
+            IntervalInSeconds: 60
+            SizeInMBs: 50
+          ProcessingConfiguration:
+            Enabled: true
+            Processors:
+              - Type: "Lambda"
+                Parameters: 
+                  - ParameterName: "LambdaArn"
+                    ParameterValue: !Sub "${ClassCrudeToLabelFunction.Arn}"
+          CloudWatchLoggingOptions: 
+            Enabled: true
+            LogGroupName: !Ref StashLogGroup
+            LogStreamName: !Ref StashLogStream
+          DomainARN: 
+            Fn::ImportValue:
+              !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain"
+          IndexName: "class_crude_label"
+          IndexRotationPeriod: "NoRotation"
+          RetryOptions: 
+              DurationInSeconds: "60"
+          RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+          S3BackupMode: "FailedDocumentsOnly"
+          S3Configuration: 
+              BucketARN: !Sub "${FireHoseBackupS3Bucket.Arn}"
+              BufferingHints: 
+                IntervalInSeconds: "60"
+                SizeInMBs: "50"
+              CompressionFormat: "UNCOMPRESSED"
+              Prefix: "class_crude_label/"
+              RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+              CloudWatchLoggingOptions: 
+                Enabled: true
+                LogGroupName: !Sub "${BaseName}-log-group"
+                LogStreamName: !Sub "${BaseName}-log-stream"
+          VpcConfiguration:
+            RoleARN: !Sub "${DeliveryStreamRole.Arn}"
+            SecurityGroupIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:FirehoseSecurityGroupConfig"
+            SubnetIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:PrivateOpenSearchSubnetConfig"
+
+  NerCrudeToLabelDeliveryStream: 
+    Type: AWS::KinesisFirehose::DeliveryStream
+    DependsOn: NerCrudeToLabelFunction
+    Properties:
+        DeliveryStreamName: !Sub "${BaseName}-NerCrudeToLabelDeliveryStream"
+        ElasticsearchDestinationConfiguration: 
+          BufferingHints: 
+            IntervalInSeconds: 60
+            SizeInMBs: 50
+          ProcessingConfiguration:
+            Enabled: true
+            Processors:
+              - Type: "Lambda"
+                Parameters: 
+                  - ParameterName: "LambdaArn"
+                    ParameterValue: !Sub "${NerCrudeToLabelFunction.Arn}"
+          CloudWatchLoggingOptions: 
+            Enabled: true
+            LogGroupName: !Ref StashLogGroup
+            LogStreamName: !Ref StashLogStream
+          DomainARN: 
+            Fn::ImportValue:
+              !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain"
+          IndexName: "ner_crude_label"
+          IndexRotationPeriod: "NoRotation"
+          RetryOptions: 
+              DurationInSeconds: "60"
+          RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+          S3BackupMode: "FailedDocumentsOnly"
+          S3Configuration: 
+              BucketARN: !Sub "${FireHoseBackupS3Bucket.Arn}"
+              BufferingHints: 
+                IntervalInSeconds: "60"
+                SizeInMBs: "50"
+              CompressionFormat: "UNCOMPRESSED"
+              Prefix: "ner_crude_label/"
+              RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+              CloudWatchLoggingOptions: 
+                Enabled: true
+                LogGroupName: !Sub "${BaseName}-log-group"
+                LogStreamName: !Sub "${BaseName}-log-stream"
+          VpcConfiguration:
+            RoleARN: !Sub "${DeliveryStreamRole.Arn}"
+            SecurityGroupIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:FirehoseSecurityGroupConfig"
+            SubnetIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:PrivateOpenSearchSubnetConfig"
+
+  NerLabelToTrainDeliveryStream: 
+    Type: AWS::KinesisFirehose::DeliveryStream
+    DependsOn: NerLabelToTrainFunction
+    Properties:
+        DeliveryStreamName: !Sub "${BaseName}-NerLabelToTrainDeliveryStream"
+        ElasticsearchDestinationConfiguration: 
+          BufferingHints: 
+            IntervalInSeconds: 60
+            SizeInMBs: 50
+          ProcessingConfiguration:
+            Enabled: true
+            Processors:
+              - Type: "Lambda"
+                Parameters: 
+                  - ParameterName: "LambdaArn"
+                    ParameterValue: !Sub "${NerLabelToTrainFunction.Arn}"
+          CloudWatchLoggingOptions: 
+            Enabled: true
+            LogGroupName: !Ref StashLogGroup
+            LogStreamName: !Ref StashLogStream
+          DomainARN: 
+            Fn::ImportValue: !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain"
+          IndexName: "ner_label_train"
+          IndexRotationPeriod: "NoRotation"
+          RetryOptions: 
+              DurationInSeconds: "60"
+          RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+          S3BackupMode: "FailedDocumentsOnly"
+          S3Configuration: 
+              BucketARN: !Sub "${FireHoseBackupS3Bucket.Arn}"
+              BufferingHints: 
+                IntervalInSeconds: "60"
+                SizeInMBs: "50"
+              CompressionFormat: "UNCOMPRESSED"
+              Prefix: "ner_label_train/"
+              RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+              CloudWatchLoggingOptions: 
+                Enabled: true
+                LogGroupName: !Sub "${BaseName}-log-group"
+                LogStreamName: !Sub "${BaseName}-log-stream"
+          VpcConfiguration:
+            RoleARN: !Sub "${DeliveryStreamRole.Arn}"
+            SecurityGroupIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:FirehoseSecurityGroupConfig"
+            SubnetIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:PrivateOpenSearchSubnetConfig"
+
+  SquadCrudeToLabelDeliveryStream: 
+    Type: AWS::KinesisFirehose::DeliveryStream
+    DependsOn: SquadCrudeToLabelFunction
+    Properties:
+        DeliveryStreamName: !Sub "${BaseName}-SquadCrudeToLabelDeliveryStream"
+        ElasticsearchDestinationConfiguration: 
+          BufferingHints: 
+            IntervalInSeconds: 60
+            SizeInMBs: 50
+          ProcessingConfiguration:
+            Enabled: true
+            Processors:
+              - Type: "Lambda"
+                Parameters: 
+                  - ParameterName: "LambdaArn"
+                    ParameterValue: !Sub "${SquadCrudeToLabelFunction.Arn}"
+          CloudWatchLoggingOptions: 
+            Enabled: true
+            LogGroupName: !Ref StashLogGroup
+            LogStreamName: !Ref StashLogStream
+          DomainARN:
+            Fn::ImportValue:
+              !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain"
+          IndexName: "squad_crude_label"
+          IndexRotationPeriod: "NoRotation"
+          RetryOptions: 
+              DurationInSeconds: "60"
+          RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+          S3BackupMode: "FailedDocumentsOnly"
+          S3Configuration: 
+              BucketARN: !Sub "${FireHoseBackupS3Bucket.Arn}"
+              BufferingHints: 
+                IntervalInSeconds: "60"
+                SizeInMBs: "50"
+              CompressionFormat: "UNCOMPRESSED"
+              Prefix: "squad_crude_label/"
+              RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+              CloudWatchLoggingOptions: 
+                Enabled: true
+                LogGroupName: !Sub "${BaseName}-log-group"
+                LogStreamName: !Sub "${BaseName}-log-stream"
+          VpcConfiguration:
+            RoleARN: !Sub "${DeliveryStreamRole.Arn}"
+            SecurityGroupIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:FirehoseSecurityGroupConfig"
+            SubnetIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:PrivateOpenSearchSubnetConfig"
+
+  SquadLabelToTrainDeliveryStream: 
+    Type: AWS::KinesisFirehose::DeliveryStream
+    DependsOn: SquadLabelToTrainFunction
+    Properties:
+        DeliveryStreamName: !Sub "${BaseName}-SquadLabelToTrainDeliveryStream"
+        ElasticsearchDestinationConfiguration: 
+          BufferingHints: 
+            IntervalInSeconds: 60
+            SizeInMBs: 50
+          ProcessingConfiguration:
+            Enabled: true
+            Processors:
+              - Type: "Lambda"
+                Parameters: 
+                  - ParameterName: "LambdaArn"
+                    ParameterValue: !Sub "${SquadLabelToTrainFunction.Arn}"
+          CloudWatchLoggingOptions: 
+            Enabled: true
+            LogGroupName: !Ref StashLogGroup
+            LogStreamName: !Ref StashLogStream
+          DomainARN: 
+            Fn::ImportValue:
+              !Sub "word-stash-db-${Environment}:OpenSearchServiceDomain"
+          IndexName: "squad_label_train"
+          IndexRotationPeriod: "NoRotation"
+          RetryOptions: 
+              DurationInSeconds: "60"
+          RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+          S3BackupMode: "FailedDocumentsOnly"
+          S3Configuration: 
+              BucketARN: !Sub "${FireHoseBackupS3Bucket.Arn}"
+              BufferingHints: 
+                IntervalInSeconds: "60"
+                SizeInMBs: "50"
+              CompressionFormat: "UNCOMPRESSED"
+              Prefix: "squad_label_train/"
+              RoleARN: !Sub "${FireHoseOpenSearchRole.Arn}"
+              CloudWatchLoggingOptions: 
+                Enabled: true
+                LogGroupName: !Sub "${BaseName}-log-group"
+                LogStreamName: !Sub "${BaseName}-log-stream"
+          VpcConfiguration:
+            RoleARN: !Sub "${DeliveryStreamRole.Arn}"
+            SecurityGroupIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:FirehoseSecurityGroupConfig"
+            SubnetIds: 
+              - Fn::ImportValue: !Sub "word-stash-db-${Environment}:PrivateOpenSearchSubnetConfig"
+
+Outputs:
+  CrudeDeliveryStreamArnExport:
+    Description: Crude Firehose stream
+    Value: !GetAtt CrudeDeliveryStream.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", CrudeDeliveryStreamArn]]
+  ClassCrudeToLabelDeliveryStreamArnExport:
+    Description: Class Crude to Label Firehose stream
+    Value: !GetAtt ClassCrudeToLabelDeliveryStream.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", ClassCrudeToLabelDeliveryStreamArn]]
+  NerCrudeToLabelDeliveryStreamArnExport:
+    Description: NER Crude to Label Firehose stream
+    Value: !GetAtt NerCrudeToLabelDeliveryStream.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", NerCrudeToLabelDeliveryStreamArn]]
+  NerLabelToTrainDeliveryStreamArnExport:
+    Description: NER Label to Train Firehose stream
+    Value: !GetAtt NerLabelToTrainDeliveryStream.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", NerLabelToTrainDeliveryStreamArn]]
+  SquadCrudeToLabelDeliveryStreamArnExport:
+    Description: SQUAD Crude to Label Firehose stream
+    Value: !GetAtt SquadCrudeToLabelDeliveryStream.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", SquadCrudeToLabelDeliveryStreamArn]]
+  SquadLabelToTrainDeliveryStreamArnExport:
+    Description:  SQUAD Label to Train Firehose stream
+    Value: !GetAtt SquadLabelToTrainDeliveryStream.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", SquadLabelToTrainDeliveryStreamArn]]
+  CrudeDeliveryStreamNameExport:
+    Description: Crude Firehose stream
+    Value: !Ref CrudeDeliveryStream
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", CrudeDeliveryStreamName]]
+  ClassCrudeToLabelDeliveryStreamNameExport:
+    Description: Class Crude to Label Firehose stream
+    Value: !Ref ClassCrudeToLabelDeliveryStream
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", ClassCrudeToLabelDeliveryStreamName]]
+  NerCrudeToLabelDeliveryStreamNameExport:
+    Description: NER Crude to Label Firehose stream
+    Value: !Ref NerCrudeToLabelDeliveryStream
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", NerCrudeToLabelDeliveryStreamName]]
+  NerLabelToTrainDeliveryStreamNameExport:
+    Description: NER Label to Train Firehose stream
+    Value: !Ref NerLabelToTrainDeliveryStream
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", NerLabelToTrainDeliveryStreamName]]
+  SquadCrudeToLabelDeliveryStreamNameExport:
+    Description: SQUAD Crude to Label Firehose stream
+    Value: !Ref SquadCrudeToLabelDeliveryStream
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", SquadCrudeToLabelDeliveryStreamName]]
+  SquadLabelToTrainDeliveryStreamNameExport:
+    Description:  SQUAD Label to Train Firehose stream
+    Value: !Ref SquadLabelToTrainDeliveryStream
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", SquadLabelToTrainDeliveryStreamName]]

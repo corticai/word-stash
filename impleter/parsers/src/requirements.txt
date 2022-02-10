@@ -1,0 +1,6 @@
+mail-parser
+openpyxl
+lxml
+docx2python
+pandas
+pdfminer.six

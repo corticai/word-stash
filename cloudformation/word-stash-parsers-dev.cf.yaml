@@ -1,0 +1,487 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: WordStash parsers
+Parameters:
+  BaseName:
+    Description: Base name for CF
+    Type: String
+  Environment:
+    Description: Environmnent setting (i.e. dev, prod, test)
+    Type: String
+  ImpleterParsersLambdaLayerZipS3Key:
+    Type: String
+    Description: Impleter Parsers Lambda layer zip file
+  ImpleterParsersLambdaZipS3Key:
+    Type: String
+    Description: Impleter Parsers Lambda zip file
+  ParserWordCountLimit:
+    Type: Number
+    Description: Parser Word Count limit (chunking of sentences)
+  ParserWriteDataJsonArrayInChunksFlag:
+    Type: String
+    Description: File Parser write json data array as separate files per json object
+    Default: false
+
+Resources:
+  # File Parser Cloud Formation
+  ## source document s3 bucket with lambda notification triggers
+  SourceDocumentsS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-source-documents-bucket"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt CsvDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .csv
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt DocxDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .docx
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt EmailDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .eml
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt PdfDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .pdf
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt TxtDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .txt
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt XlsxDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .xlsx  
+    DeletionPolicy: Delete
+
+  SourceNerAnnotatedS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-source-ner-annotated-bucket"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt NerLabelJsonDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .jsonl
+
+  SourceSquadAnnotatedS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-source-squad-annotated-bucket"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt SquadLabelJsonDictFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                - Name: suffix
+                  Value: .json
+
+  ## destinatiop document s3 json bucket
+  DestinationDocumentsS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-destination-documents-bucket"
+      NotificationConfiguration:
+        EventBridgeConfiguration:
+          EventBridgeEnabled: true
+    DeletionPolicy: Delete
+
+  DestinationNerAnnotatedS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-destination-ner-annotated-bucket"
+      NotificationConfiguration:
+        EventBridgeConfiguration:
+          EventBridgeEnabled: true
+    DeletionPolicy: Delete
+
+  DestinationSquadAnnotatedS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-destination-squad-annotated-bucket"
+      NotificationConfiguration:
+        EventBridgeConfiguration:
+          EventBridgeEnabled: true
+    DeletionPolicy: Delete
+
+  ## parser lambda role
+  ImpleterParsersLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+        - PolicyName: allowLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:*
+              Resource: arn:aws:logs:*:*:*
+        - PolicyName: getSourceObjects
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - s3:GetObject
+              Resource: 
+                - !Sub 'arn:aws:s3:::${BaseName}-source-documents-bucket/*'
+                - !Sub 'arn:aws:s3:::${BaseName}-source-squad-annotated-bucket/*'
+                - !Sub 'arn:aws:s3:::${BaseName}-source-ner-annotated-bucket/*'
+        - PolicyName: putDestinationObjects
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - s3:PutObject
+              Resource: 
+                - !Sub 'arn:aws:s3:::${BaseName}-destination-documents-bucket/*'
+                - !Sub 'arn:aws:s3:::${BaseName}-destination-squad-annotated-bucket/*'
+                - !Sub 'arn:aws:s3:::${BaseName}-destination-ner-annotated-bucket/*'
+
+  ## parser lambda layer
+  ImpleterParsersLambdaLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.8
+      Content:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaLayerZipS3Key
+      Description: Impleter lambda layer
+      LayerName: impleter-parsers-lambda-packages
+      LicenseInfo: MIT
+
+  ## csv to dictionary lambda function
+  CsvDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: csv_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-documents-bucket"
+          WORD_COUNT_LIMIT: !Ref ParserWordCountLimit
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key
+      Description: csv to dictionary lambda function
+      FunctionName: 'csv-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+
+  ## docx to dictionary lambda function
+  DocxDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: docx_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-documents-bucket"
+          WORD_COUNT_LIMIT: !Ref ParserWordCountLimit
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key 
+      Description: docx to dictionary lambda function
+      FunctionName: 'docx-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+  
+  ## email to dictionary lambda function
+  EmailDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: email_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-documents-bucket"
+          WORD_COUNT_LIMIT: !Ref ParserWordCountLimit
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key 
+      Description: email to dictionary lambda function
+      FunctionName: 'email-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+  
+  ## pdf to dictionary lambda function
+  PdfDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: pdf_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-documents-bucket"
+          WORD_COUNT_LIMIT: !Ref ParserWordCountLimit
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key 
+      Description: pdf to dictionary lambda function
+      FunctionName: 'pdf-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+
+  ## txt to dictionary lambda function
+  TxtDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: txt_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-documents-bucket"
+          WORD_COUNT_LIMIT: !Ref ParserWordCountLimit
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key 
+      Description: txt to dictionary lambda function
+      FunctionName: 'txt-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+
+  ## xlsx to dictionary lambda function
+  XlsxDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: xlsx_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-documents-bucket"
+          WORD_COUNT_LIMIT: !Ref ParserWordCountLimit
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key 
+      Description: xlsx to dictionary lambda function
+      FunctionName: 'xlsx-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+
+  ## Ner Annotated Json to dictionary lambda function
+  NerLabelJsonDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: ner_label_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-ner-annotated-bucket"
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key 
+      Description: Ner annotated to dictionary lambda function
+      FunctionName: 'ner-annotated-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+
+  ## Squad Annotated Json to dictionary lambda function
+  SquadLabelJsonDictFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterParsersLambdaExecutionRole
+    Properties:
+      Handler: squad_label_dict_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Sub "${BaseName}-destination-squad-annotated-bucket"
+          WRITE_DATA_JSON_ARRAY_IN_CHUNKS_FLAG: !Ref ParserWriteDataJsonArrayInChunksFlag
+      Code:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterParsersLambdaZipS3Key 
+      Description: Squad annotated to dictionary lambda function
+      FunctionName: 'squad-annotated-dict-parser'
+      Role: !Sub "${ImpleterParsersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterParsersLambdaLayer
+      MemorySize: 512
+      Timeout: 900
+
+  ## Allow the s3 bucket permissions to invoke the lambda functions
+  ### csv
+  ProcessingCsvDictLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref CsvDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-documents-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+  ### docx
+  ProcessingDocxDictLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref DocxDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-documents-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+  ### email
+  ProcessingEmailDictLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref EmailDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-documents-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+  ### pdf
+  ProcessingPdfDictLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref PdfDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-documents-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+  ### txt
+  ProcessingTxtDictLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref TxtDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-documents-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+  ### xlsx
+  ProcessingXlsxDictLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref XlsxDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-documents-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+  ### Squad annotated
+  ProcessingNerAnnotatedLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref NerLabelJsonDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-ner-annotated-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+  ### Squad annotated
+  ProcessingSquadAnnotatedLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref SquadLabelJsonDictFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${BaseName}-source-squad-annotated-bucket'
+      SourceAccount: !Ref AWS::AccountId
+
+Outputs:
+  DestinationDocumentsS3BucketExport:
+    Description: S3 Document destination
+    Value: !Ref DestinationDocumentsS3Bucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", DestinationDocumentsS3Bucket]]
+  DestinationNerAnnotatedS3BucketExport:
+    Description: S3 Ner annotated destination
+    Value: !Ref DestinationNerAnnotatedS3Bucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", DestinationNerAnnotatedS3Bucket]]
+  DestinationSquadAnnotatedS3BucketExport:
+    Description: S3 Squad annotated destination 
+    Value: !Ref DestinationSquadAnnotatedS3Bucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", DestinationSquadAnnotatedS3Bucket]]

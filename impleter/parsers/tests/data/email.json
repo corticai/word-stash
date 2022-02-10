@@ -1,0 +1,418 @@
+{
+  "data": [
+    {
+      "timestamp": "2022-02-03T09:37:06.344363",
+      "filetype": "eml",
+      "index": 0,
+      "id": "530db3e4-3891-4980-ae59-57e6c92100fa-20220203_173706",
+      "content": "Sed eu magna in ligula dignissim vehicula. Suspendisse sollicitudin ornare\nelit. Integer eu eros accumsan, efficitur ante ut, congue ligula. Aenean\ncursus sed tellus et auctor. Donec sollicitudin sodales mi at lobortis.\nNunc vel risus et nisl mollis placerat in quis leo. Vestibulum enim lacus,\nvulputate gravida lorem quis, rhoncus imperdiet dolor. Vestibulum mollis\nlectus vel ante laoreet, eu bibendum est gravida. Integer bibendum tempus\nsapien sed gravida. Vivamus blandit ante non ante volutpat, in commodo\ntortor accumsan. Praesent semper ante diam, quis gravida quam ultricies vel.\n\n--- mail_boundary ---\nSed eu magna in ligula dignissim vehicula. Suspendisse sollicitudin ornare elit. Integer eu eros accumsan, efficitur ante ut, congue"
+    },
+    {
+      "timestamp": "2022-02-03T09:37:06.344363",
+      "filetype": "eml",
+      "index": 1,
+      "id": "530db3e4-3891-4980-ae59-57e6c92100fa-20220203_173706",
+      "content": "ligula. Aenean cursus sed tellus et auctor. Donec sollicitudin sodales mi at lobortis. Nunc vel risus et nisl mollis placerat in quis leo. Vestibulum enim lacus, vulputate gravida lorem quis, rhoncus imperdiet dolor. Vestibulum mollis lectus vel ante laoreet, eu bibendum est gravida. Integer bibendum tempus sapien sed gravida. Vivamus blandit ante non ante volutpat, in commodo tortor accumsan. Praesent semper ante diam, quis gravida quam ultricies vel.\n"
+    },
+    {
+      "timestamp": "2022-02-03T09:37:06.344363",
+      "filetype": "attachments",
+      "index": 2,
+      "id": "530db3e4-3891-4980-ae59-57e6c92100fa-20220203_173706",
+      "content": [
+        {
+          "timestamp": "2022-02-03T09:37:06.344376",
+          "filename": "google_terms_of_service_en.pdf",
+          "filetype": "pdf",
+          "mail_content_type": "application/pdf",
+          "content": [
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 0,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 1,
+              "content": "GOOGL E TERM S OF  SERVICE\n Effective January 5, 2022\n Archived versions\n What\u2019s covered in these terms\n We know it\u2019s tempting to skip these Terms of Service, but\nit\u2019s impo\u0000ant to establish what you can expect from us as\nyou use Google services, and what we expect from you.\n These Terms of Service re\u0000ect the way Google\u2019s business works, the laws that apply to our company, and\n certain things we\u2019ve always believed to be true. As a result, these Terms of Service help de\u0000ne Google\u2019s\n relationship with you as you interact with our services. For example, these terms include the following"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 1,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 1,
+              "content": "topic\n headings:\n What you can expect from us, which describes how we provide and develop our services\n What we expect from you, which establishes certain rules for using our services\n Content in Google services, which describes the intellectual property rights to the content you \u0000nd in our\n services \u2014 whether that content belongs to you, Google, or others\n In case of problems or disagreements, which describes other legal rights you have, and what to expect\n in case someone violates these terms\n Understanding these terms is important because, by using our services, you\u2019re agreeing to these terms.\n Besides these terms, we"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 2,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 1,
+              "content": "also publish a Privacy Policy. Although it\u2019s not part of these terms, we encourage\n you to read it to better understand how you can update, manage, export, and delete your information.\n Terms\n Service provider\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 3,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 2,
+              "content": "Google services are provided by, and you\u2019re contracting with:\n Google LLC\n organized under the laws of the State of Delaware, USA, and operating under the laws of the USA\n 1600 Amphitheatre Parkway\n Mountain View, California 94043\n USA\n Age requirements\n with you.\n and policies.\n If you\u2019re under the age required to manage your own Google Account, you must have your parent or legal\n guardian\u2019s permission to use a Google Account. Please have your parent or legal guardian read these terms\n If you\u2019re a parent or legal guardian, and you allow your child to use the services, then these terms apply to\n"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 4,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 2,
+              "content": "you and you\u2019re responsible for your child\u2019s activity on the services.\n Some Google services have additional age requirements as described in their service-speci\u0000c additional terms\n Your relationship with Google\n These terms help de\u0000ne the relationship between you and Google. Broadly speaking, we give you permission\n to use our services if you agree to follow these terms, which re\u0000ect how Google\u2019s business works and how we\n earn money. When we speak of \u201cGoogle,\u201d \u201cwe,\u201d \u201cus,\u201d and \u201cour,\u201d we mean Google LLC and its a\u0000liates.\n What you can expect from us\n Provide a broad range of useful services\n We provide a broad"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 5,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 2,
+              "content": "range of services that are subject to these terms, including:\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 6,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 3,
+              "content": "apps and sites (like Search and Maps)\n platforms (like Google Shopping)\n integrated services (like Maps embedded in other companies\u2019 apps or sites)\n devices (like Google Nest)\n Many of these services also include content that you can stream or interact with.\n Our services are designed to work together, making it easier for you to move from one activity to the next. For\n example, if your Calendar event includes an address, you can click on that address and Maps can show you\n how to get there.\n Develop, improve, and update Google services\n We\u2019re constantly developing new technologies and features to improve our"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 7,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 3,
+              "content": "services. For example, we use\n arti\u0000cial intelligence and machine learning to provide you with simultaneous translations, and to better detect\n and block spam and malware. As part of this continual improvement, we sometimes add or remove features\n and functionalities, increase or decrease limits to our services, and start offering new services or stop\n offering old ones. When a service requires or includes downloadable software, that software sometimes\n updates automatically on your device once a new version or feature is available. Some services let you adjust\n your automatic update settings.\n If we make material changes that negatively impact your use of"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 8,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 3,
+              "content": "our services or if we stop offering a service,\n we\u2019ll provide you with reasonable advance notice, except in urgent situations such as preventing abuse,\n responding to legal requirements, or addressing security and operability issues. We\u2019ll also provide you with an\n opportunity to export your content from your Google Account using Google Takeout, subject to applicable\n law and policies.\n What we expect from you\n Follow these terms and service-speci\u0000c additional terms\n The permission we give you to use our services continues as long as you comply with:\n these terms\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 9,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 4,
+              "content": "service-speci\u0000c additional terms, which could, for example, include things like additional age\n requirements\n We also make various policies, help centers, and other resources available to you to answer common\n questions and to set expectations about using our services. These resources include our Privacy Policy,\n Copyright Help Center, Safety Center, and other pages accessible from our policies site.\n Although we give you permission to use our services, we retain any intellectual property rights we have in the\n services.\n Respect others\n of conduct:\n We want to maintain a respectful environment for everyone, which means you must follow these basic rules\n comply with"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 10,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 4,
+              "content": "applicable laws, including export control, sanctions, and human tra\u0000cking laws\n respect the rights of others, including privacy and intellectual property rights\n don\u2019t abuse or harm others or yourself (or threaten or encourage such abuse or harm) \u2014 for example, by\n misleading, defrauding, illegally impersonating, defaming, bullying, harassing, or stalking others\n don\u2019t abuse, harm, interfere with, or disrupt the services \u2014 for example, by accessing or using them in\n fraudulent or deceptive ways, introducing malware, or spamming, hacking, or bypassing our systems or\n protective measures. When we index the web to bring you search results, we respect standard usage\n restrictions that"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 11,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 4,
+              "content": "website owners specify in their websites\u2019 code, so we require the same when others use\n our services\n Our service-speci\u0000c additional terms and policies provide additional details about appropriate conduct that\n everyone using those services must follow. If you \u0000nd that others aren\u2019t following these rules, many of our\n services allow you to report abuse. If we act on a report of abuse, we also provide the process described in\n the Taking action in case of problems section.\n Permission to use your content\n Some of our services are designed to let you upload, submit, store, send, receive, or share your content."
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 12,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 4,
+              "content": "You\n have no obligation to provide any content to our services and you\u2019re free to choose the content that you want\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 13,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 5,
+              "content": "to provide. If you choose to upload or share content, please make sure you have the necessary rights to do so\n and that the content is lawful.\n License\n Your content remains yours, which means that you retain any intellectual property rights that you\n have in your content. For example, you have intellectual property rights in the creative content you\n make, such as reviews you write. Or you may have the right to share someone else\u2019s creative content\n if they\u2019ve given you their permission.\n We need your permission if your intellectual property rights restrict our use of your content. You\n provide"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 14,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 5,
+              "content": "Google with that permission through this license.\n This license covers your content if that content is protected by intellectual property rights.\n What\u2019s covered\n What\u2019s not covered\n This license doesn\u2019t affect your privacy rights \u2014 it\u2019s only about your intellectual property rights\n This license doesn\u2019t cover these types of content:\n publicly-available factual information that you provide, such as corrections to the\n address of a local business. That information doesn\u2019t require a license because it\u2019s\n considered common knowledge that everyone\u2019s free to use.\n feedback that you offer, such as suggestions to improve our services. Feedback is\n covered in the Service-related communications section"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 15,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 5,
+              "content": "below.\n Scope\n This license is:\n worldwide, which means it\u2019s valid anywhere in the world\n non-exclusive, which means you can license your content to others\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 16,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 6,
+              "content": "royalty-free, which means there are no monetary fees for this license\n Rights\n This license allows Google to:\n host, reproduce, distribute, communicate, and use your content \u2014 for example, to save your\n content on our systems and make it accessible from anywhere you go\n publish, publicly perform, or publicly display your content, if you\u2019ve made it visible to others\n modify and create derivative works based on your content, such as reformatting or translating\n it\n sublicense these rights to:\n other users to allow the services to work as designed, such as enabling you to share\n photos with people you choose\n our contractors"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 17,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 6,
+              "content": "who\u2019ve signed agreements with us that are consistent with these terms,\n only for the limited purposes described in the Purpose section below\n Purpose\n This license is for the limited purpose of:\n operating and improving the services, which means allowing the services to work as designed\n and creating new features and functionalities. This includes using automated systems and\n algorithms to analyze your content:\n for spam, malware, and illegal content\n to recognize patterns in data, such as determining when to suggest a new album in\n Google Photos to keep related photos together\n to customize our services for you, such as providing recommendations"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 18,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 6,
+              "content": "and\n personalized search results, content, and ads (which you can change or turn off in Ads\n Settings)\n This analysis occurs as the content is sent, received, and when it is stored.\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 19,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 7,
+              "content": "using content you\u2019ve shared publicly to promote the services. For example, to promote a\n Google app, we might quote a review you wrote. Or to promote Google Play, we might show a\n screenshot of the app you offer in the Play Store.\n developing new technologies and services for Google consistent with these terms\n Duration\n This license lasts for as long as your content is protected by intellectual property rights.\n If you remove from our services any content that\u2019s covered by this license, then our systems will stop\n making that content publicly available in a reasonable amount of time. There are"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 20,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 7,
+              "content": "two exceptions:\n If you already shared your content with others before removing it. For example, if you shared a\n photo with a friend who then made a copy of it, or shared it again, then that photo may\n continue to appear in your friend\u2019s Google Account even after you remove it from your Google\n Account.\n search results.\n If you make your content available through other companies\u2019 services, it\u2019s possible that search\n engines, including Google Search, will continue to \u0000nd and display your content as part of their\n Using Google services\n Your Google Account\n If you meet these age requirements you"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 21,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 7,
+              "content": "can create a Google Account for your convenience. Some services\n require that you have a Google Account in order to work \u2014 for example, to use Gmail, you need a Google\n Account so that you have a place to send and receive your email.\n You\u2019re responsible for what you do with your Google Account, including taking reasonable steps to keep your\n Google Account secure, and we encourage you to regularly use the Security Checkup.\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 22,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 8,
+              "content": "Using Google services on behalf of an organization or business\n Many organizations, such as businesses, non-pro\u0000ts, and schools, take advantage of our services. To use\n our services on behalf of an organization:\n an authorized representative of that organization must agree to these terms\n your organization\u2019s administrator may assign a Google Account to you. That administrator might\n require you to follow additional rules and may be able to access or disable your Google Account.\n Service-related communications\n To provide you with our services, we sometimes send you service announcements and other information. To\n learn more about how we communicate with you, see"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 23,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 8,
+              "content": "Google\u2019s Privacy Policy.\n If you choose to give us feedback, such as suggestions to improve our services, we may act on your feedback\n without obligation to you.\n Content in Google services\n Your content\n Some of our services give you the opportunity to make your content publicly available \u2014 for example, you\n might post a product or restaurant review that you wrote, or you might upload a blog post that you created.\n See the Permission to use your content section for more about your rights in your content, and how\n your content is used in our services\n See the Removing your"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 24,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 8,
+              "content": "content section to learn why and how we might remove user-generated content\n from our services\n If you think someone is infringing your intellectual property rights, you can send us notice of the infringement\n and we\u2019ll take appropriate action. For example, we suspend or close the Google Accounts of repeat copyright\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 25,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 9,
+              "content": "infringers as described in our Copyright Help Center.\n Google content\n Some of our services include content that belongs to Google \u2014 for example, many of the visual illustrations\n you see in Google Maps. You may use Google\u2019s content as allowed by these terms and any service-speci\u0000c\n additional terms, but we retain any intellectual property rights that we have in our content. Don\u2019t remove,\n obscure, or alter any of our branding, logos, or legal notices. If you want to use our branding or logos, please\n see the Google Brand Permissions page.\n Other content\n Finally, some of our services give you access"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 26,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 9,
+              "content": "to content that belongs to other people or organizations \u2014 for\n example, a store owner\u2019s description of their own business, or a newspaper article displayed in Google News.\n You may not use this content without that person or organization\u2019s permission, or as otherwise allowed by\n law. The views expressed in other people or organizations\u2019 content are theirs, and don\u2019t necessarily re\u0000ect\n Google\u2019s views.\n Some of our services include downloadable software. We give you permission to use that software as part of\n So\u0000ware in Google services\n the services.\n The license we give you is:\n worldwide, which means it\u2019s valid anywhere in"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 27,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 9,
+              "content": "the world\n non-exclusive, which means that we can license the software to others\n royalty-free, which means there are no monetary fees for this license\n personal, which means it doesn\u2019t extend to anyone else\n non-assignable, which means you\u2019re not allowed to assign the license to anyone else\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 28,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 10,
+              "content": "Some of our services include software that\u2019s offered under open source license terms that we make available\n to you. Sometimes there are provisions in the open source license that explicitly override parts of these terms,\n so please be sure to read those licenses.\n You may not copy, modify, distribute, sell, or lease any part of our services or software.\n In case of problems or disagreements\n Both the law and these terms give you the right to (1) a certain quality of service, and (2) ways to \u0000x\n problems if things go wrong.\n We provide our services using reasonable skill and"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 29,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 10,
+              "content": "care. If we don\u2019t meet the quality level described in this\n warranty, you agree to tell us and we\u2019ll work with you to try to resolve the issue.\n The only commitments we make about our services (including the content in the services, the speci\u0000c\n functions of our services, or their reliability, availability, or ability to meet your needs) are provided in (1) the\n Warranty section; (2) the service-speci\u0000c additional terms; and (3) laws that can\u2019t be limited by these terms.\n Warranty\n Disclaimers\n Liabilities\n For all users\n terms.\n Both the law and these terms try to strike a balance as to"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 30,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 10,
+              "content": "what you or Google can claim from the other in\n case of problems. That\u2019s why the law allows us to limit certain liabilities \u2014 but not others \u2014 under these\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 31,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 11,
+              "content": "These terms only limit our responsibilities as allowed by applicable law. These terms don\u2019t limit liability for\n fraud, fraudulent misrepresentation, or death or personal injury caused by negligence or willful misconduct.\n Other than the liabilities described above, Google is liable only for its breaches of these terms or applicable\n service-speci\u0000c additional terms, subject to applicable law.\n For business users and organizations only\n If you\u2019re a business user or organization:\n To the extent allowed by applicable law, you\u2019ll indemnify Google and its directors, o\u0000cers, employees,\n and contractors for any third-party legal proceedings (including actions by government authorities)\n arising out of or"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 32,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 11,
+              "content": "relating to your unlawful use of the services or violation of these terms or service-\n speci\u0000c additional terms. This indemnity covers any liability or expense arising from claims, losses,\n damages, judgments, \u0000nes, litigation costs, and legal fees.\n If you\u2019re legally exempt from certain responsibilities, including indemni\u0000cation, then those\n responsibilities don\u2019t apply to you under these terms. For example, the United Nations enjoys certain\n immunities from legal obligations and these terms don\u2019t override those immunities.\n Google won\u2019t be responsible for the following liabilities:\n loss of pro\u0000ts, revenues, business opportunities, goodwill, or anticipated savings\n indirect or consequential loss\n punitive damages\n Google\u2019s total"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 33,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 11,
+              "content": "liability arising out of or relating to these terms is limited to the greater of (1) US$500 or\n (2) 125% of the fees that you paid to use the relevant services in the 12 months before the breach\n Taking action in case of problems\n Before taking action as described below, we\u2019ll provide you with advance notice when reasonably possible,\n describe the reason for our action, and give you an opportunity to \u0000x the problem, unless we reasonably\n believe that doing so would:\n cause harm or liability to a user, third party, or Google\n violate the law or a legal enforcement"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 34,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 11,
+              "content": "authority\u2019s order\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 35,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 12,
+              "content": "compromise an investigation\n compromise the operation, integrity, or security of our services\n Removing your content\n If we reasonably believe that any of your content (1) breaches these terms, service-speci\u0000c additional terms\n or policies, (2) violates applicable law, or (3) could harm our users, third parties, or Google, then we reserve\n the right to take down some or all of that content in accordance with applicable law. Examples include child\n pornography, content that facilitates human tra\u0000cking or harassment, terrorist content, and content that\n infringes someone else\u2019s intellectual property rights.\n Suspending or terminating your access to Google services\n Google reserves the right"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 36,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 12,
+              "content": "to suspend or terminate your access to the services or delete your Google Account\n if any of these things happen:\n you materially or repeatedly breach these terms, service-speci\u0000c additional terms or policies\n we\u2019re required to do so to comply with a legal requirement or a court order\n we reasonably believe that your conduct causes harm or liability to a user, third party, or Google \u2014 for\n example, by hacking, phishing, harassing, spamming, misleading others, or scraping content that\n doesn\u2019t belong to you\n For more information about why we disable accounts and what happens when we do, see this Help Center\n"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 37,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 12,
+              "content": "page. If you believe your Google Account has been suspended or terminated in error, you can appeal.\n Of course, you\u2019re always free to stop using our services at any time. If you do stop using a service, we\u2019d\n appreciate knowing why so that we can continue improving our services.\n Se\u0000ling disputes, governing law, and cou\u0000s\n For information about how to contact Google, please visit our contact page.\n California law will govern all disputes arising out of or relating to these terms, service-speci\u0000c additional\n terms, or any related services, regardless of con\u0000ict of laws rules. These disputes will be resolved exclusively\n"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 38,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 12,
+              "content": ""
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 39,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 13,
+              "content": "in the federal or state courts of Santa Clara County, California, USA, and you and Google consent to personal\n jurisdiction in those courts.\n To the extent that applicable local law prevents certain disputes from being resolved in a California court,\n then you can \u0000le those disputes in your local courts. Likewise, if applicable local law prevents your local court\n from applying California law to resolve these disputes, then these disputes will be governed by the applicable\n local laws of your country, state, or other place of residence.\n About these terms\n By law, you have certain rights that can\u2019t be limited"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 40,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 13,
+              "content": "by a contract like these terms of service. These terms are\n in no way intended to restrict those rights.\n These terms describe the relationship between you and Google. They don\u2019t create any legal rights for other\n people or organizations, even if others bene\u0000t from that relationship under these terms.\n We want to make these terms easy to understand, so we\u2019ve used examples from our services. But not all\n services mentioned may be available in your country.\n If these terms con\u0000ict with the service-speci\u0000c additional terms, the additional terms will govern for that\n service.\n If it turns out that a particular"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 41,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 13,
+              "content": "term is not valid or enforceable, this will not affect any other terms.\n If you don\u2019t follow these terms or the service-speci\u0000c additional terms, and we don\u2019t take action right away,\n that doesn\u2019t mean we\u2019re giving up any rights that we may have, such as taking action in the future.\n We may update these terms and service-speci\u0000c additional terms (1) to re\u0000ect changes in our services or how\n we do business \u2014 for example, when we add new services, features, technologies, pricing, or bene\u0000ts (or\n remove old ones), (2) for legal, regulatory, or security reasons, or (3) to prevent abuse"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 42,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 13,
+              "content": "or harm.\n If we materially change these terms or service-speci\u0000c additional terms, we\u2019ll provide you with reasonable\n advance notice and the opportunity to review the changes, except (1) when we launch a new service or\n feature, or (2) in urgent situations, such as preventing ongoing abuse or responding to legal requirements. If\n you don\u2019t agree to the new terms, you should remove your content and stop using the services. You can also\n end your relationship with us at any time by closing your Google Account.\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 43,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 14,
+              "content": "DEF IN ITION S\n a\u0000liate\n consumer\n copyright\n use\u201d and \u201cfair dealing\u201d).\n disclaimer\n An entity that belongs to the Google group of companies, which means Google LLC and its subsidiaries,\n including the following companies that provide consumer services in the EU: Google Ireland Limited, Google\n Commerce Limited, and Google Dialer Inc.\n business user\n An individual or entity who is not a consumer (see consumer).\n An individual who uses Google services for personal, non-commercial purposes outside of their trade,\n business, craft, or profession. (See business user)\n A legal right that allows the creator of an original work (such as a blog post,"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 44,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 14,
+              "content": "photo, or video) to decide if and\n how that original work may be used by others, subject to certain limitations and exceptions (such as \u201cfair\n A statement that limits someone\u2019s legal responsibilities.\n indemnify or indemnity\n An individual or organization\u2019s contractual obligation to compensate the losses suffered by another\n individual or organization from legal proceedings such as lawsuits.\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 45,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 15,
+              "content": "intellectual prope\u0000y rights (IP rights)\n Rights over the creations of a person\u2019s mind, such as inventions (patent rights); literary and artistic works\n (copyright); designs (design rights); and symbols, names, and images used in commerce (trademarks). IP\n rights may belong to you, another individual, or an organization.\n Losses from any type of legal claim, whether the claim is based on a contract, tort (including negligence), or\n other reason, and whether or not those losses could have been reasonably anticipated or foreseen.\n liability\n organization\n services\n A legal entity (such as a corporation, non-pro\u0000t, or school) and not an individual person.\n The Google"
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 46,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 15,
+              "content": "services that are subject to these terms are the products and services listed at\n https://policies.google.com/terms/service-speci\u0000c, including:\n apps and sites (like Search and Maps)\n platforms (like Google Shopping)\n integrated services (like Maps embedded in other companies\u2019 apps or sites)\n devices and other goods (like Google Nest)\n Many of these services also include content that you can stream or interact with.\n trademark\n Symbols, names, and images used in commerce that are capable of distinguishing the goods or services of\n one individual or organization from those of another.\n "
+            },
+            {
+              "timestamp": "2022-02-03T09:37:06.344798",
+              "filetype": "pdf",
+              "index": 47,
+              "id": "86972c03-2703-4af1-b550-baf7bf6b37d8-20220203_173706",
+              "page_id": 16,
+              "content": "An assurance that a product or service will perform to a certain standard.\n warranty\n your content\n Things that you create, upload, submit, store, send, receive, or share using our services, such as:\n Docs, Sheets, and Slides you create\n blog posts you upload through Blogger\n reviews you submit through Maps\n videos you store in Drive\n emails you send and receive through Gmail\n pictures you share with friends through Photos\n travel itineraries that you share with Google\n "
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,393 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: WordStash database
+Parameters:
+  BaseName:
+    Description: Base name for CF
+    Type: String
+  Environment:
+    Description: Environmnent setting (i.e. dev, prod, test)
+    Type: String
+  EngineVersion:
+    Description: User-defined OpenSearch version
+    Type: String
+  InstanceCount:
+    Description: Instance count
+    Type: String
+  InstanceType:
+    Description: Instance type
+    Type: String
+  Iops:
+    Type: String
+    Default: '0'
+  VolumeSize:
+    Type: String
+  VolumeType:
+    Type: String
+    Default: general
+  CidrBlock:
+    Type: String
+    Description: 'The /16 CIDR block for the VPC (Format Example: 10.0.0.0/16)'
+    Default: 10.0.0.0/16
+  PrivateCidrBlock:
+    Type: String
+    Description: 'The /16 CIDR block for the VPC (Format Example: 10.0.0.0/16)'
+    Default: 10.0.0.0/16
+  PublicCidrBlock:
+    Type: String
+    Description: 'The /16 CIDR block for the VPC (Format Example: 10.0.0.0/16)'
+    Default: 10.1.0.0/16
+
+Resources:
+  VpcConfig:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref CidrBlock
+
+  PrivateOpenSearchSubnetConfig:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VpcConfig
+      CidrBlock: !Ref PrivateCidrBlock
+      AvailabilityZone:
+        Fn::Select: 
+          - 0
+          - Fn::GetAZs: "" 
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    DependsOn: NatPublicIP
+    Properties: 
+      SubnetId: !Ref PublicOpenSearchSubnetConfig
+      AllocationId: !GetAtt NatPublicIP.AllocationId
+
+  NatPublicIP:
+    Type: AWS::EC2::EIP
+    DependsOn: VpcConfig
+    Properties:
+      Domain: vpc
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcConfig
+      
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      NatGatewayId: !Ref NatGateway
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+
+  PrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateOpenSearchSubnetConfig
+      RouteTableId: !Ref PrivateRouteTable
+
+  PublicOpenSearchSubnetConfig:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VpcConfig
+        CidrBlock: !Ref PublicCidrBlock
+        AvailabilityZone:
+          Fn::Select: 
+            - 0
+            - Fn::GetAZs: ""
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    DependsOn: VpcConfig
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    DependsOn: InternetGateway
+    Properties:
+      VpcId: !Ref VpcConfig
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcConfig
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicOpenSearchSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicOpenSearchSubnetConfig
+      RouteTableId: !Ref PublicRouteTable
+
+  FirehoseSecurityGroupConfig:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Allow http to client host
+      VpcId:
+        Ref: VpcConfig
+      GroupName: !Sub "SecurityGroup-${BaseName}-FireHose"
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+  OpenSearchSecurityGroupConfig:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Allow http to client host
+      VpcId:
+        Ref: VpcConfig
+      GroupName: !Sub "SecurityGroup-${BaseName}-OpenSearch"
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref FirehoseSecurityGroupConfig
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIp: !Ref PublicCidrBlock
+          IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+
+  UserPool:
+    Type: "AWS::Cognito::UserPool"
+    Properties:
+      UserPoolName: !Sub ${BaseName}-user-pool
+      AutoVerifiedAttributes:
+        - email
+      MfaConfiguration: "OFF"
+      Schema:
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+
+  UserPoolClient:
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: !Sub ${BaseName}-client
+      GenerateSecret: false
+      UserPoolId: !Ref UserPool
+  
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties: 
+      Domain: !Sub "${BaseName}"
+      UserPoolId: !Ref UserPool
+
+  UserPoolGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties: 
+      Description: !Sub "${BaseName} user pool group"
+      GroupName: !Sub "${BaseName}-user-pool-group"
+      Precedence: 0
+      UserPoolId: !Ref UserPool
+
+  IdentityPool:
+    Type: "AWS::Cognito::IdentityPool"
+    Properties:
+      IdentityPoolName: !Sub ${BaseName}-identity
+      AllowUnauthenticatedIdentities: true
+      CognitoIdentityProviders: 
+        - ClientId: !Ref UserPoolClient
+          ProviderName: !GetAtt UserPool.ProviderName
+
+  CognitoUnauthorizedRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "${BaseName}-cognito-unauth-role"
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal: 
+              Federated: "cognito-identity.amazonaws.com"
+            Action: 
+              - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals: 
+                "cognito-identity.amazonaws.com:aud": !Ref IdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": unauthenticated
+      Policies:
+        - PolicyName: "CognitoUnauthorizedPolicy"
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action:
+                  - "mobileanalytics:PutEvents"
+                  - "cognito-sync:*"
+                Resource: "*"
+
+  CognitoAuthorizedRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "${BaseName}-cognito-auth-role"
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal: 
+              Federated: "cognito-identity.amazonaws.com"
+            Action: 
+              - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals: 
+                "cognito-identity.amazonaws.com:aud": !Ref IdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": authenticated
+      Policies:
+        - PolicyName: "CognitoAuthorizedPolicy"
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action:
+                  - "mobileanalytics:PutEvents"
+                  - "cognito-sync:*"
+                  - "cognito-identity:*"
+                Resource: "*"
+
+  IdentityPoolRoleMapping:
+    Type: "AWS::Cognito::IdentityPoolRoleAttachment"
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        authenticated: !GetAtt CognitoAuthorizedRole.Arn
+        unauthenticated: !GetAtt CognitoUnauthorizedRole.Arn
+
+  OpenSearchCognitoPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - cognito-idp:DescribeUserPool
+              - cognito-idp:CreateUserPoolClient
+              - cognito-idp:DeleteUserPoolClient
+              - cognito-idp:DescribeUserPoolClient
+              - cognito-idp:AdminInitiateAuth
+              - cognito-idp:AdminUserGlobalSignOut
+              - cognito-idp:ListUserPoolClients
+              - cognito-identity:DescribeIdentityPool
+              - cognito-identity:UpdateIdentityPool
+              - cognito-identity:SetIdentityPoolRoles
+              - cognito-identity:GetIdentityPoolRoles
+            Resource: 
+              - "arn:aws:cognito-identity:*:*:identitypool/*"
+              - "arn:aws:cognito-idp:*:*:userpool/*"
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: 
+              - "arn:aws:iam::*:role/*"
+            Condition:
+              StringLike: 
+                "iam:PassedToService": "cognito-identity.amazonaws.com"
+          - Effect: Allow
+            Action:
+                - ec2:DescribeVpcs
+                - cognito-identity:ListIdentityPools
+                - cognito-idp:ListUserPools
+            Resource: 
+              - "*"
+          - Effect: Allow
+            Action:
+                - iam:GetRole
+                - iam:PassRole
+            Resource: 
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/CognitoAccessForAmazonOpenSearch"
+
+  OpenSearchCognitoRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal: 
+            Service: 
+              - "es.amazonaws.com"
+          Action: 
+            - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - !Ref OpenSearchCognitoPolicy
+
+  OpenSearchServiceDomain:
+    Type: 'AWS::OpenSearchService::Domain'
+    DependsOn: 
+      - OpenSearchCognitoRole
+      - CognitoAuthorizedRole
+    Properties:
+      DomainName: !Sub "${BaseName}"
+      EngineVersion:
+        Ref: EngineVersion
+      ClusterConfig:
+        InstanceCount:
+            Ref: InstanceCount
+        InstanceType:
+          Ref: InstanceType
+      EBSOptions:
+        EBSEnabled: true
+        Iops:
+          Ref: Iops
+        VolumeSize: 
+          Ref: VolumeSize
+        VolumeType: 
+          Ref: VolumeType
+      AccessPolicies:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:sts::${AWS::AccountId}:assumed-role/${BaseName}-cognito-auth-role/CognitoIdentityCredentials'
+            Action:
+              - 'es:*'
+            Resource: !Sub 'arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${BaseName}/*'
+      AdvancedOptions:
+        rest.action.multi.allow_explicit_index: true
+        override_main_response_version: true
+      VPCOptions:
+        SubnetIds:
+          - Ref: PrivateOpenSearchSubnetConfig
+        SecurityGroupIds:
+          - Ref: OpenSearchSecurityGroupConfig
+      CognitoOptions:
+        Enabled: true
+        IdentityPoolId: !Ref IdentityPool
+        RoleArn: !Sub "${OpenSearchCognitoRole.Arn}"
+        UserPoolId: !Ref UserPool
+
+Outputs:  
+  PrivateOpenSearchSubnetConfigExport:
+    Description: Open Search private subnet
+    Value: !Ref PrivateOpenSearchSubnetConfig
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", PrivateOpenSearchSubnetConfig]]  
+  FirehoseSecurityGroupConfigExport:
+    Description: Firehose security group config
+    Value: !Ref FirehoseSecurityGroupConfig
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", FirehoseSecurityGroupConfig]]  
+  OpenSearchServiceDomainExport:
+    Description: Open Search domain ARN
+    Value: !GetAtt OpenSearchServiceDomain.Arn
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", OpenSearchServiceDomain]]

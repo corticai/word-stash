@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "timestamp": "2022-02-03T10:05:58.805544",
+      "filetype": "xlsx",
+      "index": 0,
+      "id": "a762bcc0-366f-4d9f-9b71-ccbb8010e388-20220203_180558",
+      "sheet_name": "Sheet1",
+      "content": "a, b, c\n1, 2, 3"
+    },
+    {
+      "timestamp": "2022-02-03T10:05:58.805544",
+      "filetype": "xlsx",
+      "index": 1,
+      "id": "a762bcc0-366f-4d9f-9b71-ccbb8010e388-20220203_180558",
+      "sheet_name": "Sheet2",
+      "content": "d, e, f\n4, 5, 6"
+    }
+  ]
+}

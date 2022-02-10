@@ -1,0 +1,348 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: WordStash publishers
+Parameters:
+  BaseName:
+    Description: Base name for CF
+    Type: String
+  Environment:
+    Description: Environmnent setting (i.e. dev, prod, test)
+    Type: String
+  ImpleterPublishersLambdaLayerZipS3Key:
+    Type: String
+    Description: Impleter Parsers Lambda layer zip file
+  ImpleterPublishersLambdaZipS3Key:
+    Type: String
+    Description: Impleter Parsers Lambda zip file
+
+Resources:
+  ## Publishers lambda role
+  ImpleterPublishersLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+        - PolicyName: allowLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:*
+              Resource: arn:aws:logs:*:*:*
+        - PolicyName: getSourceObjects
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - s3:GetObject
+              Resource: 
+                - !Join ["", ["arn:aws:s3:::", Fn::ImportValue: !Sub "word-stash-parsers-${Environment}:DestinationDocumentsS3Bucket", "/*"]]
+                - !Join ["", ["arn:aws:s3:::", Fn::ImportValue: !Sub "word-stash-parsers-${Environment}:DestinationNerAnnotatedS3Bucket", "/*"]]
+                - !Join ["", ["arn:aws:s3:::", Fn::ImportValue: !Sub "word-stash-parsers-${Environment}:DestinationSquadAnnotatedS3Bucket", "/*"]]
+        - PolicyName: putDestinationObjects
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - firehose:PutRecord
+              - firehose:PutRecordBatch
+              - firehose:DescribeDeliveryStream
+              Resource: 
+                - Fn::ImportValue:
+                    !Sub "word-stash-converters-${Environment}:CrudeDeliveryStreamArn"
+                - Fn::ImportValue:
+                    !Sub "word-stash-converters-${Environment}:ClassCrudeToLabelDeliveryStreamArn"
+                - Fn::ImportValue:
+                    !Sub "word-stash-converters-${Environment}:NerCrudeToLabelDeliveryStreamArn"
+                - Fn::ImportValue:
+                    !Sub "word-stash-converters-${Environment}:NerLabelToTrainDeliveryStreamArn"
+                - Fn::ImportValue:
+                    !Sub "word-stash-converters-${Environment}:SquadCrudeToLabelDeliveryStreamArn"        
+                - Fn::ImportValue:
+                    !Sub "word-stash-converters-${Environment}:SquadLabelToTrainDeliveryStreamArn"               
+
+  ## parser lambda layer
+  ImpleterPublishersLambdaLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.8
+      Content:
+        S3Bucket:
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterPublishersLambdaLayerZipS3Key
+      Description: Impleter lambda layer
+      LayerName: impleter-publishers-lambda-packages
+      LicenseInfo: MIT
+
+  CrudePublisherFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterPublishersLambdaExecutionRole
+    Properties:
+      Handler: eb_s3_firehose_crude_json_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          STREAM_NAME:
+            Fn::ImportValue:
+              !Sub "word-stash-converters-${Environment}:CrudeDeliveryStreamName"
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterPublishersLambdaZipS3Key
+      Description: Eventbridge Lambda that sends a payload to STREAM_NAME
+      FunctionName: 'crude-publisher'
+      Role: !Sub "${ImpleterPublishersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterPublishersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  ClassCrudeToLabelPublisherFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterPublishersLambdaExecutionRole
+    Properties:
+      Handler: eb_s3_firehose_crude_json_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          STREAM_NAME:
+            Fn::ImportValue:
+              !Sub "word-stash-converters-${Environment}:ClassCrudeToLabelDeliveryStreamName"
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterPublishersLambdaZipS3Key
+      Description: Eventbridge Lambda that sends a payload to STREAM_NAME
+      FunctionName: 'class-crude-label-publisher'
+      Role: !Sub "${ImpleterPublishersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterPublishersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  NerCrudeToLabelPublisherFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterPublishersLambdaExecutionRole
+    Properties:
+      Handler: eb_s3_firehose_crude_json_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          STREAM_NAME:
+            Fn::ImportValue:
+              !Sub "word-stash-converters-${Environment}:NerCrudeToLabelDeliveryStreamName"
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterPublishersLambdaZipS3Key
+      Description: Eventbridge Lambda that sends a payload to STREAM_NAME
+      FunctionName: 'ner-crude-label-publisher'
+      Role: !Sub "${ImpleterPublishersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterPublishersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  NerLabelToTrainPublisherFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterPublishersLambdaExecutionRole
+    Properties:
+      Handler: eb_s3_firehose_ner_label_json_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          STREAM_NAME:
+            Fn::ImportValue:
+              !Sub "word-stash-converters-${Environment}:NerLabelToTrainDeliveryStreamName"
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterPublishersLambdaZipS3Key
+      Description: Eventbridge Lambda that sends a payload to STREAM_NAME
+      FunctionName: 'ner-label-train-publisher'
+      Role: !Sub "${ImpleterPublishersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterPublishersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  SquadCrudeToLabelPublisherFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterPublishersLambdaExecutionRole
+    Properties:
+      Handler: eb_s3_firehose_crude_json_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          STREAM_NAME:
+            Fn::ImportValue:
+              !Sub "word-stash-converters-${Environment}:SquadCrudeToLabelDeliveryStreamName"
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterPublishersLambdaZipS3Key
+      Description: Eventbridge Lambda that sends a payload to STREAM_NAME
+      FunctionName: 'squad-crude-label-publisher'
+      Role: !Sub "${ImpleterPublishersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterPublishersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  SquadLabelToTrainPublisherFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: ImpleterPublishersLambdaExecutionRole
+    Properties:
+      Handler: eb_s3_firehose_squad_label_json_lambda_function.lambda_handler
+      Environment:
+        Variables:
+          STREAM_NAME:
+            Fn::ImportValue:
+              !Sub "word-stash-converters-${Environment}:SquadLabelToTrainDeliveryStreamName"
+      Code:
+        S3Bucket: 
+          Fn::ImportValue:
+            !Sub "word-stash-lambda-packages-${Environment}:LambdaPackagesS3Bucket"
+        S3Key: !Ref ImpleterPublishersLambdaZipS3Key
+      Description: Eventbridge Lambda that sends a payload to STREAM_NAME
+      FunctionName: 'squad-label-train-publisher'
+      Role: !Sub "${ImpleterPublishersLambdaExecutionRole.Arn}"
+      Runtime: python3.8
+      Layers:
+        - !Ref ImpleterPublishersLambdaLayer
+      MemorySize: 128
+      Timeout: 900
+
+  CrudeEventRule: 
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${BaseName}-CrudeEventRule"
+      Description: "Crude payload/message event rule to invoke a lambda via an S3 notification to send a payload to Firehose delivery streams"
+      State: "ENABLED"
+      EventPattern: 
+        source:
+          - aws.s3
+        detail-type:
+          - "Object Created"
+        detail:
+          bucket:
+            name:           
+                - Fn::ImportValue: !Sub "word-stash-parsers-${Environment}:DestinationDocumentsS3Bucket"
+      Targets:
+        - 
+          Arn: !GetAtt CrudePublisherFunction.Arn
+          Id: "CrudeFunctionTarget"
+        - 
+          Arn: !GetAtt ClassCrudeToLabelPublisherFunction.Arn
+          Id: "ClassCrudeToLabel"
+        - 
+          Arn: !GetAtt NerCrudeToLabelPublisherFunction.Arn
+          Id: "NerCrudeToLabel"
+        - 
+          Arn: !GetAtt SquadCrudeToLabelPublisherFunction.Arn
+          Id: "SquadCrudeToLabel"
+
+  CrudeEventRuleCrudePublisherFunctionInvokeLambdaPermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref CrudePublisherFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CrudeEventRule.Arn
+
+  CrudeEventRuleClassCrudeToLabelPublisherFunctionInvokeLambdaPermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref ClassCrudeToLabelPublisherFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CrudeEventRule.Arn
+
+  CrudeEventRuleNerCrudeToLabelPublisherFunctionInvokeLambdaPermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref NerCrudeToLabelPublisherFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CrudeEventRule.Arn
+
+  CrudeEventRuleSquadCrudeToLabelPublisherFunctionInvokeLambdaPermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref SquadCrudeToLabelPublisherFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CrudeEventRule.Arn
+
+  NerLabelEventRule: 
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${BaseName}-NerLabelRule"
+      Description: "NER Label payload/message event rule to invoke a lambda via an S3 notification to send a payload to Firehose delivery streams"
+      State: "ENABLED"
+      EventPattern: 
+        source:
+          - aws.s3
+        detail-type:
+          - "Object Created"
+        detail:
+          bucket:
+            name:           
+                - Fn::ImportValue: !Sub "word-stash-parsers-${Environment}:DestinationNerAnnotatedS3Bucket"
+      Targets:
+        - 
+          Arn: !GetAtt NerLabelToTrainPublisherFunction.Arn
+          Id: "NerLabelToTrainTarget"
+
+  NerLabelEventNerLabelToTrainPublisherFunctionInvokeLambdaPermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref NerLabelToTrainPublisherFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt NerLabelEventRule.Arn
+
+  SquadLabelEventRule: 
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${BaseName}-SquadLabelRule"
+      Description: "SQuAD Label payload/message event rule to invoke a lambda via an S3 notification to send a payload to Firehose delivery streams"
+      State: "ENABLED"
+      EventPattern: 
+        source:
+          - aws.s3
+        detail-type:
+          - "Object Created"
+        detail:
+          bucket:
+            name:           
+                - Fn::ImportValue: !Sub "word-stash-parsers-${Environment}:DestinationSquadAnnotatedS3Bucket"
+      Targets:
+        - 
+          Arn: !GetAtt SquadLabelToTrainPublisherFunction.Arn
+          Id: "SquadLabelToTrainTarget"
+
+  SquadLabelEventNerLabelToTrainPublisherFunctionInvokeLambdaPermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref SquadLabelToTrainPublisherFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt SquadLabelEventRule.Arn

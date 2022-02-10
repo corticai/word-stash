@@ -1,0 +1,10 @@
+pytest
+pytest-mockito
+boto3
+moto
+mail-parser
+openpyxl
+lxml
+docx2python
+pandas
+pdfminer.six

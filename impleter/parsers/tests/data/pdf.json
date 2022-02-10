@@ -1,0 +1,380 @@
+{
+  "data": [
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 0,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 1,
+      "content": "1\n2\n0\n2\n \nc\ne\nD\n \n1\n2\n \n \n]\nI\n A\n.\ns\nc\n[\n \n \n1\nv\n7\n4\n4\n1\n1\n.\n2\n1\n1\n2\n:\nv\ni\nX\nr\na\n Multi-Modality Distillation via Learning the teacher\u2019s\nmodality-level Gram Matrix\n Peng Liu\n Yunnan University, Kunming 650500,liupeng0606@gmail.com\n Abstract\n In the context of multi-modality knowledge distillation research, the existing\n methods was also mainly focus on the problem of only learning teacher\u2019s \ufb01nal\n output. Thus, there are still deep di\ufb00erences between the teacher network and\n the student network. It is necessary to force the student network to learn the\n modality relationship information of the teacher network. To e\ufb00ectively ex-\n ploit transfering knowledge from teachers to students, a novel modality relation\n distillation paradigm by modeling the relationship information"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 1,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 1,
+      "content": "among di\ufb00erent\n modality are adopted,that is learning the teacher\u2019s modality-level Gram Matrix.\n Keywords: knowledge distillation, modality relation,modality-level, Gram\n Matrix\n 1. Introduction\n With the acquisition of large-scale data and the exploration of deep learning\n network structure, neural models in recent years have been successful in com-\n puter vision and natural language processing \ufb01eld including extremely complex\n problem statements. For example, UNITER [1], and BERT [2]. Despite the\n excellent performance of these networks, there are still problems for application\n in industry. These networks are huge in size, with millions (and billions) of\n parameters, most of these existing networks are requires expensive memory"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 2,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 1,
+      "content": "and\n time-consuming computation when inferring, and thus cannot be deployed on\n edge devices. Although some e\ufb03cient algorithms have been proposed to solve\n these problems, the complexity of neural network models is still dramatically\n Preprint submitted to Journal of LATEX Templates\n December 22, 2021\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 3,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 2,
+      "content": "increasing, especially in depth. Therefore, research on model compression and\n inference acceleration for current complex deep neural networks is of great sig-\n ni\ufb01cance. Intuitively, the theoretical search space for more complex models is\n larger than for a smaller network. The convergence space of the larger network\n should therefore overlap with the solution space of the smaller network if the\n same (or even similar) convergence can be achieved with a smaller network.\n However, the smaller network usually cannot converge by itself. Smaller net-\n works often have di\ufb00erences in convergence from larger networks. In contrast,\n if the smaller network is guided to"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 4,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 2,
+      "content": "replicate the behavior of the larger network,\n then the smaller network convergence space is likely to overlap that of the larger\n network. On the other hand, Previous studies [3] [4] [5]\n [9] have also suggested that deep neural networks often have redundancy, so\n it is feasible to compress the model. In recent years, there have been several\n proposed methods for compressing neural networks. These methods are gen-\n erally categorized into three major categories: Quantization, Weights Pruning,\n and Knowledge Distillation (KD). In these, KD has received much success for\n reducing the size of pretrained large models. Knowledge distillation was \ufb01rst\n proposed"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 5,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 2,
+      "content": "by Bucilu et al.\n in 2006. In these study, they tried to transfer the\n output of a large network to a shallow network. Later, hinton rede\ufb01nes knowl-\n edge distillation, which refers to the idea by teaching a smaller network, step\n by step, exactly imitating a bigger already trained network output. Knowledge\n Distillation assumes that the knowledge learned by the teacher is a mapping\n from input to output, during the training process, the output of the last layer\n of the teacher is passed to the students as the goal.\n Knowledge distillation can transfer the knowledge of one network to another.\n The"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 6,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 2,
+      "content": "two networks can be isomorphic or heterogeneous. The method is to train\n a teacher network \ufb01rst, and then use the output of the teacher network and\n the real label of the data to train the student network. Knowledge distillation\n can be used to transform a network from a large network to a small network,\n and retain the performance close to that of a large network; The knowledge\n learned from multiple networks can also be transferred to one network, so that\n 2\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 7,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 3,
+      "content": "the performance of a single network is close to the result of emsemble.\n Despite knowledge distillation has explored in various studies [10] [11] [7]\n [12] [13] [14] in recent years, such as improving student models and improving\n teachers performance via self-distillation, there are still not involved in the in-\n tensive study of the multi-modal distillation, which are even rarely involved in\n prior works. For example, the visual entailment (VE) task, where the premise\n is de\ufb01ned as an image rather than a natural language sentence relative to tradi-\n tional textual entailment (TE). It contains text and image information, and the\n respondent"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 8,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 3,
+      "content": "needs to judge the relationship between the text and the image (i.e.\n Entailment, Neutral and Contradiction). Research involving multi-modality is\n of great signi\ufb01cance, because in the real world, some information is more often\n presented in a combination of images and text. This requires deep learning\n models to integrate and understand multi-modal information well. Although\n the existing knowledge distillation methods can be applied to multi-modal dis-\n tillation, the student network directly learns the output of the teacher network.\n However, it ignores the rich relationship information of di\ufb00erent modality in the\n teacher network. For example, the relationship information of teacher\u2019s output\n when"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 9,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 3,
+      "content": "images and text are separately input to teacher\u2019s network.\n Unfortunately, in the context of multi-modality knowledge distillation re-\n search, the existing methods was also mainly focus on the problem of only\n learning teacher\u2019s \ufb01nal output. xx\u2019s research suggested that only distillating the\n multi-modal knowledge of the teacher network will have a major disadvantage:\n for per modal information, there are still deep di\ufb00erences between the teacher\n network and the student network. Therefore, some knowledge of the teacher\n network cannot be e\ufb00ectively transferred to the student network only through\n the method of conventional knowledge distillation. Thus, for the multi-modal\n teacher model, it"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 10,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 3,
+      "content": "is necessary to force the student network to learn each modal-\n ity and modality relationship information of the teacher network. Di\ufb00erent from\n the previous methods, we decided to explore the relationship between di\ufb00erent\n modality. Inspired by this method, we design a novel modality relation-driven\n framework for Multi-Modality Distillation. As shown in Figure 1, To e\ufb00ectively\n 3\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 11,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 4,
+      "content": "exploit transfering knowledge from teachers to students, a novel modality re-\n lation Distillation paradigm by modeling the relationship information among\n di\ufb00erent modality are adopted.\n Our main contributions: We not only explore the \ufb01nal output of multi-modal\n knowledge distillation as the only distillation goal, but our method can e\ufb00ec-\n tively explore transfering information between di\ufb00erent modality corresponding\n to teachers to students, so as to improve the performance of multi-modal distil-\n lation.\n 2. Related works\n 2.1. Knowledge Distillation\n With the rapid increases in computing power, it is not surprising that var-\n ious complex deep neural networks with a large number of parameters"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 12,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 4,
+      "content": "such\n as UNITER [1], and BERT [2] have been increasingly used for computer vi-\n sion natural and language processing and have achieved great success [6] [7] [8].\n However, it can not be e\ufb03ciently deployed on device with limited computing\n and storage capability [15][16] [17]. To address the above issues, research mainly\n focuses on model compression such as knowledge distillation [18], [19], model\n quantization [19], [20] [21] [22] and model pruning [23], [24]. Among them, the\n knowledge distillation approach has been widely used due to its advantages,\n such as low performance sacri\ufb01ce, easy implementation and hardware-friendly.\n The vanilla knowledge distillation involves"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 13,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 4,
+      "content": "training a small model (student) to\n match a large pre-trained model (teacher). In order to transfer the knowledge\n from the teacher model to the student, a loss function is optimized to match\n ground-truth labels as well as softened teacher logits. As the \u201dtemperature\u201d\n scale function is applied to the softmax, the logit distributions learn by teacher\n become softer, which can reveal inter-class relationships e\ufb00ectively. Based on\n intuition, the key to the success of KD is mainly that more \ufb01ne-grained super-\n vised information for improving the student model performance are provided\n across di\ufb00erent categories in soft targets rather than discrete labels."
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 14,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 4,
+      "content": "Unlike\n 4\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 15,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 5,
+      "content": "previous interpretations, new concepts propose that soft target regularization\n functions as smoothing regulation for preventing overcon\ufb01dent predictions by\n student models.\n In recent research [25] [26] [27] [28] [29] [30] [31], the main goal of knowledge\n distillation is to transfer the feature information of samples from teachers to\n students. For example, [32] imitated the teacher network by asking students\n to learn to return Logits before the softmax layer. [33] let students share some\n lower semantic levels with teachers and train them at the same time, but they\n also let students learn teachers\u2019 Logits knowledge.\n In order to transmit the\n middle layer"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 16,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 5,
+      "content": "information learned by the teacher network from the sample to\n the student network, [34] proposed \ufb01tnet, which uses the feature mapping and\n \ufb01nal output of the middle layer of the teacher network to teach the student\n network. However, these methods have a common feature. They only learn\n the feature information of a single sample from the teacher network, and rarely\n test the relationship between sample features. In addition, the characteristics of\n teacher network middle layer are closely related to the actual situation Network\n design, so the above methods can not be widely popularized. In addition, most\n methods directly force students"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 17,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 5,
+      "content": "to learn the output of teachers\u2019 network, while\n ignoring the feature space transformation process [35] [36]. In order to solve\n this problem, [11] proposed the solution process (FSP), which is designed to let\n students learn online and teachers learn, rather than the results of the middle\n layer.\n Di\ufb00erent from their methods, we do not explore how to transfer the rela-\n tionship information between samples from teacher network to student network.\n Our goal is to explore how to transfer the relationship information of di\ufb00erent\n modality from teacher network to student network.\n 3. Our Approach\n In our method, there are two parts"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 18,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 5,
+      "content": "of loss, that is, the traditional KD loss\n and our proposed modality relationship loss between teacher and student. We\n 5\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 19,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 6,
+      "content": "Figure 1: The detail architecture diagram of our method.\n \ufb01rst introduce the KD loss, and then introduce our proposed loss .\n Generally speaking, the traditional KD knowledge distillation [37] [37] [38]\n [39] [40] [41] [42] can be viewed as minimizing the objective function:\n LIKD =\n l (fT (xi) , fS (xi))\n (1)\n (cid:88)\n xi\u2208X\n where the l is represent the loss function, which is used to penalize the di\ufb00erence\n between teacher network and student network.\n In our paper, we input three modal information to teacher and student\n network in turn, that is, text information alone, picture information alone, and\n joint"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 20,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 6,
+      "content": "information of picture and text. For the student network output of these\n three modals, we adopt the standard cross entropy loss between student outputs\n and ground true label, which can be regarded as a data enhancement strategy,\n 6\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 21,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 7,
+      "content": "which can improve the performance of the model. This can be de\ufb01ned as follow:\n LCE = \u03b1CE (f (xt) , y) + \u03b2CE(f (xi) , y) + \u03b3CE(f (xi+t) , y))\n (2)\n where the xi represent the image modality, the xt represent the text modal-\n ity, the xt+i represent the text and image modality.\n Inspired by recent research, we can learn extra semantic information for an\n entity, Based on this ideas, we propose to model such modality relation to trans-\n fer knowledge from teacher to student. Thus, our method aims at transferring\n the relationship knowledge of di\ufb00erent modality using mutual"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 22,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 7,
+      "content": "modality relations\n in the teacher\u2019s output.\n We model the modality relationship in a single sample with a modality-\n level Gram Matrix [42]. Given an input sample that can be divided into three\n modality (image, text, text and image), We denote the output results when the\n network inputs these three modal information as A, thus, for a single sample,\n the modality relationship G can be de\ufb01ned as follow:\n G = A \u00b7 AT\n (3)\n (4)\n Our goal is to transfer teacher\u2019s modality relationship to student, which can\n be de\ufb01ned as follow:\n Lmr = M SE (At, As)\n where the MSE represent"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 23,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 7,
+      "content": "the loss function of mean square error, the At and\n As represent the information of teacher and student modality relationship.\n 4. Experiment\n We evaluated our proposed multimodal distillation method, in this section,\n we will describe the experiment in detail.\n 7\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 24,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 8,
+      "content": "5. Datasets\n To demonstrate the e\ufb00ectiveness of our approach, we pick up three multi-\n modal datasets, including Hateful-Memes, SNLI-VE, and NLVR. The Hateful-\n Memes dataset consists of 10K multimodal memes. The task is a binary classi-\n \ufb01cation problem, which is to detect hate speech in multimodal memes. We use\n Accuracy (ACC) as evaluation metrics for hateful memes. The goal of Visual\n Entailment is to predict whether a given image semantically entails an input\n sentence. Classi\ufb01cation accuracy over three classes (\u201dEntailment\u201d, \u201dNeutral\u201d\n and \u201dContradiction\u201d) is used to measure model performance. We use accuracy\n as an evaluation metric following. NLVR contains 92,244"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 25,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 8,
+      "content": "pairs of human-written\n English sentences grounded in synthetic images. Because the images are syn-\n thetically generated, this dataset can be used for semantic parsing.\n 6. Implementation details\n For the teacher model, we use a 12 layer pre-trained uniter network, and\n for the student model, we use a 2-layer of uniter network to implementation\n student network. In our task, we only consider the relationship between image\n and text. Conventional KD was used as the basic distillation method in this\n paper. In addition, we include several distillation method baselines including\n conventional KD. Other distillation methods are also applicable to our method\n and"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 26,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 8,
+      "content": "we will discuss the results in our experiments using other KD methods.\n For analysis, we used UNITER, pre-trained multimodal models such as teacher\n model and 2 layer UNITER pre-trained multimodal models as a student model.\n UNITER consists of 12 layers with a hidden size of 768. Student model consists\n of 2 layers with a hidden size of 768. We used the regional features in the images\n as a kind of \ufb01ne tuning for both the teacher and the student on each dataset\n for the student. Validation sets used to train weight learners to use data sets as\n metadata data. We"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 27,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 8,
+      "content": "\ufb01nd the optimal hyperparameter on the validation set.\n 8\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 28,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 9,
+      "content": "Figure 2: The modality relationship result of our method.\n 9\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 29,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 10,
+      "content": "VE\n NLVR\n HM\n test\n val\n test\n val\n test\n val\n KD\n 71.22\n 71.43\n 73.62\n 73.45\n 68.22\n 67.89\n Ours\n 72.45\n 72.66\n 75.33\n 75.06\n 69.54\n 69.85\n Table 1: the result of comparing our method with others\n 7. Experiment result\n 7.1. Compare our method with others\n Our method in detail as shown in table 1 result, you can see our way to\n a baseline method on the basis of the relative to a promotion, it may be that\n the way for us to learn from teachers in the network to more information for\n classi\ufb01cation, the way we design, you can learn from teachers in"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 30,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 10,
+      "content": "the network to\n a single sample of the interaction between the di\ufb00erent modal information, This\n information is e\ufb00ectively transferred from the teacher network to the student\n network. Our approach has better performance than just using the last layer of\n output information.\n 7.2. Learning relationship matrix from teacher\n In order to better understand the learning behavior of our paradigm in net-\n work training, we visualized the calculated sample relationship matrix G as\n shown in Fig 2, from the development of student model and teacher model in\n di\ufb00erent training times. To clearly show the alignment of the two matrices, we\n also compute"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 31,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 10,
+      "content": "their absolute distance matrices, as shown in the red column to the\n right. As can be seen from Fig.2, at the beginning of the network training, the\n internal connection structure of di\ufb00erent samples was not well presented (note\n that small batches were classi\ufb01ed according to the basis truth label), and the\n calculated relationship matrix was greatly di\ufb00erent due to input disturbance. As\n the training progressed, the model gradually generates meaningful relationship\n 10\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 32,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 11,
+      "content": "matrix, and the matrix of the student network and the matrix of the teacher\n network are more and more similar. At the same time, with the convergence of\n the model, the absolute di\ufb00erence between the two becomes smaller and smaller,\n indicating that the student model has gradually learned the modal information\n of the classroom model.\n 8. Conclusion\n In this paper, we propose a novel method for multi-modality knowledge\n distillation, while the existing methods was also mainly focus on the problem\n of only learning teacher\u2019s \ufb01nal output. Thus, there are still deep di\ufb00erences\n between the teacher network and the student network."
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 33,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 11,
+      "content": "It is necessary to force\n the student network to learn the modality relationship information of the teacher\n network. To e\ufb00ectively exploit transfering knowledge from teachers to students,\n a novel modality relation Distillation paradigm by modeling the relationship\n information among di\ufb00erent modality are adopted,that is learning the teacher\u2019s\n modality-level Gram Matrix.\n References\n [1] Y.-C. Chen, L. Li, L. Yu, A. El Kholy, F. Ahmed, Z. Gan, Y. Cheng,\n J. Liu, Uniter: Universal image-text representation learning, in: European\n conference on computer vision, Springer, 2020, pp. 104\u2013120.\n [2] J. Devlin, M.-W. Chang, K. Lee, K. Toutanova, Bert: Pre-training of\n deep bidirectional transformers for"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 34,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 11,
+      "content": "language understanding, arXiv preprint\n arXiv:1810.04805.\n [3] L. Breiman, N. Shang, Born again trees, University of California, Berkeley,\n Berkeley, CA, Technical Report 1 (2) (1996) 4.\n [4] L. J. Ba, R. Caruana, Do deep nets really need to be deep?, arXiv preprint\n arXiv:1312.6184.\n 11\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 35,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 12,
+      "content": "[5] Z. Huang, N. Wang, Like what you like: Knowledge distill via neuron\n selectivity transfer, arXiv preprint arXiv:1707.01219.\n [6] A. Romero, N. Ballas, S. E. Kahou, A. Chassang, C. Gatta, Y. Bengio,\n Fitnets: Hints for thin deep nets, arXiv preprint arXiv:1412.6550.\n [7] S. Zagoruyko, N. Komodakis, Paying more attention to attention: Improv-\n ing the performance of convolutional neural networks via attention transfer,\n arXiv preprint arXiv:1612.03928.\n [8] H. Bagherinezhad, M. Horton, M. Rastegari, A. Farhadi, Label re\ufb01nery:\n Improving imagenet classi\ufb01cation through label progression, arXiv preprint\n arXiv:1805.02641.\n [9] G. Hinton, O. Vinyals, J. Dean, Distilling the knowledge in a neural net-\n work,"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 36,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 12,
+      "content": "arXiv preprint arXiv:1503.02531.\n [10] T. Furlanello, Z. Lipton, M. Tschannen, L. Itti, A. Anandkumar, Born\n again neural networks, in: International Conference on Machine Learning,\n PMLR, 2018, pp. 1607\u20131616.\n [11] J. Yim, D. Joo, J. Bae, J. Kim, A gift from knowledge distillation: Fast\n optimization, network minimization and transfer learning, in: Proceedings\n of the IEEE Conference on Computer Vision and Pattern Recognition,\n 2017, pp. 4133\u20134141.\n [12] Z. Yang, T. Luo, D. Wang, Z. Hu, J. Gao, L. Wang, Learning to navigate\n for \ufb01ne-grained classi\ufb01cation, in: Proceedings of the European Conference\n on Computer Vision (ECCV), 2018, pp. 420\u2013435.\n [13] F. Schro\ufb00, D."
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 37,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 12,
+      "content": "Kalenichenko, J. Philbin, Facenet: A uni\ufb01ed embedding for\n face recognition and clustering, in: Proceedings of the IEEE conference on\n computer vision and pattern recognition, 2015, pp. 815\u2013823.\n [14] W. Kim, B. Goyal, K. Chawla, J. Lee, K. Kwon, Attention-based ensemble\n for deep metric learning, in: Proceedings of the European Conference on\n Computer Vision (ECCV), 2018, pp. 736\u2013751.\n 12\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 38,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 13,
+      "content": "[15] W. Cao, J. Yuan, Z. He, Z. Zhang, Z. He, Fast deep neural networks with\n knowledge guided training and predicted regions of interests for real-time\n video object detection, IEEE Access 6 (2018) 8990\u20138999.\n [16] A. Krizhevsky, G. Hinton, et al., Learning multiple layers of features from\n tiny images.\n 2023\u20132049.\n [17] V. Vapnik, R. Izmailov, et al., Learning using privileged information: sim-\n ilarity control and knowledge transfer., J. Mach. Learn. Res. 16 (1) (2015)\n [18] B. B. Sau, V. N. Balasubramanian, Deep model compression: Distilling\n knowledge from noisy teachers, arXiv preprint arXiv:1610.09650.\n [19] A. Polino, R. Pascanu, D. Alistarh, Model"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 39,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 13,
+      "content": "compression via distillation and\n quantization, arXiv preprint arXiv:1802.05668.\n [20] Y. Zhou, S.-M. Moosavi-Dezfooli, N.-M. Cheung, P. Frossard, Adaptive\n quantization for deep neural network, in: Thirty-Second AAAI Conference\n on Arti\ufb01cial Intelligence, 2018.\n [21] A. Fan, P. Stock, B. Graham, E. Grave, R. Gribonval, H. Jegou, A. Joulin,\n Training with quantization noise for extreme model compression, arXiv\n preprint arXiv:2004.07320.\n [22] M. T. Hansen, S. R. Sharpe, Relativistic, model-independent, three-particle\n quantization condition, Physical Review D 90 (11) (2014) 116003.\n [23] Z. Liu, M. Sun, T. Zhou, G. Huang, T. Darrell, Rethinking the value of\n network pruning, arXiv preprint arXiv:1810.05270.\n [24] M. Zhu, S."
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 40,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 13,
+      "content": "Gupta, To prune, or not to prune: exploring the e\ufb03cacy of\n pruning for model compression, arXiv preprint arXiv:1710.01878.\n [25] Y. Zhu, Y. Wang, Student customized knowledge distillation: Bridging\n the gap between student and teacher, in: Proceedings of the IEEE/CVF\n International Conference on Computer Vision, 2021, pp. 5057\u20135066.\n 13\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 41,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 14,
+      "content": "[26] L. Wang, K.-J. Yoon, Knowledge distillation and student-teacher learning\n for visual intelligence: A review and new outlooks, IEEE Transactions on\n Pattern Analysis and Machine Intelligence.\n [27] S. Panchapagesan, D. S. Park, C.-C. Chiu, Y. Shangguan, Q. Liang,\n A. Gruenstein, E\ufb03cient knowledge distillation for rnn-transducer models,\n in: ICASSP 2021-2021 IEEE International Conference on Acoustics, Speech\n and Signal Processing (ICASSP), IEEE, 2021, pp. 5639\u20135643.\n [28] X. Chen, B. He, K. Hui, L. Sun, Y. Sun, Simpli\ufb01ed tinybert: Knowledge\n distillation for document retrieval, in: European Conference on Information\n Retrieval, Springer, 2021, pp. 241\u2013248.\n [29] Y. Shang, B. Duan, Z. Zong, L. Nie,"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 42,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 14,
+      "content": "Y. Yan, Lipschitz continuity guided\n knowledge distillation, in: Proceedings of the IEEE/CVF International\n Conference on Computer Vision, 2021, pp. 10675\u201310684.\n [30] Y. Liu, K. Wang, G. Li, L. Lin, Semantics-aware adaptive knowledge distil-\n lation for sensor-to-vision action recognition, IEEE Transactions on Image\n Processing.\n [31] B. Zhao, K. Han, Novel visual category discovery with dual ranking statis-\n tics and mutual knowledge distillation, Advances in Neural Information\n Processing Systems 34.\n [32] S. Sen, N. Moha, B. Baudry, J.-M. J\u00b4ez\u00b4equel, Meta-model pruning, in: Inter-\n national Conference on Model Driven Engineering Languages and Systems,\n Springer, 2009, pp. 32\u201346.\n [33] M. Phuong, C. Lampert, Towards"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 43,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 14,
+      "content": "understanding knowledge distillation, in:\n International Conference on Machine Learning, PMLR, 2019, pp. 5142\u2013\n 5151.\n [34] S.\n I. Mirzadeh, M. Farajtabar, A. Li, N. Levine, A. Matsukawa,\n H. Ghasemzadeh, Improved knowledge distillation via teacher assistant,\n 14\n "
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 44,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 15,
+      "content": "in: Proceedings of the AAAI Conference on Arti\ufb01cial Intelligence, Vol. 34,\n 2020, pp. 5191\u20135198.\n [35] Z. Huang, X. Shen, J. Xing, T. Liu, X. Tian, H. Li, B. Deng, J. Huang, X.-\n S. Hua, Revisiting knowledge distillation: An inheritance and exploration\n framework, in: Proceedings of the IEEE/CVF Conference on Computer\n Vision and Pattern Recognition, 2021, pp. 3579\u20133588.\n [36] Q. Xu, Z. Chen, K. Wu, C. Wang, M. Wu, X. Li, Kdnet-rul: A knowl-\n edge distillation framework to compress deep neural networks for machine\n remaining useful life prediction, IEEE Transactions on Industrial Electron-\n ics.\n [37] G. Aguilar, Y. Ling, Y. Zhang,"
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 45,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 15,
+      "content": "B. Yao, X. Fan, C. Guo, Knowledge distilla-\n tion from internal representations, in: Proceedings of the AAAI Conference\n on Arti\ufb01cial Intelligence, Vol. 34, 2020, pp. 7350\u20137357.\n [38] G. Xu, Z. Liu, X. Li, C. C. Loy, Knowledge distillation meets self-\n supervision, in: European Conference on Computer Vision, Springer, 2020,\n pp. 588\u2013604.\n [39] X. Wang, R. Zhang, Y. Sun, J. Qi, Kdgan: Knowledge distillation with\n generative adversarial networks., in: NeurIPS, 2018, pp. 783\u2013794.\n [40] J. Tang, R. Shivanna, Z. Zhao, D. Lin, A. Singh, E. H. Chi, S. Jain,\n Understanding and improving knowledge distillation, arXiv preprint\n arXiv:2002.03532.\n [41] Y. Liu, J."
+    },
+    {
+      "timestamp": "2022-02-03T09:46:57.476112",
+      "filetype": "pdf",
+      "index": 46,
+      "id": "39859f8e-3b99-47d8-954f-d21c71a21d83-20220203_174657",
+      "page_id": 15,
+      "content": "Cao, B. Li, C. Yuan, W. Hu, Y. Li, Y. Duan, Knowledge distil-\n lation via instance relationship graph, in: Proceedings of the IEEE/CVF\n Conference on Computer Vision and Pattern Recognition, 2019, pp. 7096\u2013\n 7104.\n [42] A. Mishra, D. Marr, Apprentice: Using knowledge distillation techniques to\n improve low-precision network accuracy, arXiv preprint arXiv:1711.05852.\n 15\n "
+    }
+  ]
+}

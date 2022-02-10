@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": "ebac14fa-731c-4b67-83bd-8a21e04c6cc9-20220203_181052",
+      "text": "API: generate password is required",
+      "label": [
+        [
+          5,
+          21,
+          "B-SUPPORTING_ACTIVITY"
+        ]
+      ],
+      "section_0": "Story",
+      "section_1": "User Creation Administrator user set up",
+      "section_2": "Supporting Activity",
+      "title": "JIRA",
+      "section": "User setup",
+      "subsection": "Supporting Activity",
+      "timestamp": "2022-02-03T10:10:52.129091",
+      "filetype": "ner_annotated",
+      "index": 0
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: WordStash lambda layer bucket
+Parameters:
+  BaseName:
+    Description: Base name for CF
+    Type: String
+Resources:
+  # CodePipeline for running build.
+  LambdaPackagesS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BaseName}-lambda-packages-bucket"
+    DeletionPolicy: Delete
+Outputs:
+  LambdaPackagesS3BucketExport:
+    Description: Lambda layer S3 bucket
+    Value: !Ref LambdaPackagesS3Bucket
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", LambdaPackagesS3Bucket]]

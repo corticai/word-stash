@@ -1,0 +1,35 @@
+{
+  "version": "v1.1",
+  "data": [
+    {
+      "title": "REGULATORY GUIDE 209: Credit licensing: Responsible lending conduct",
+      "paragraphs": [
+        {
+          "context": "Key points Credit licensees must comply with certain responsible lending obligations. The key concept of these obligations is that credit licensees must not enter into or assist a consumer with a credit product that is unsuitable for them. As a credit licensee, you must decide how you will meet the responsible  lending obligations. This guide sets out ASIC\u2019s views on what the obligations require and steps you can take to minimise the risk of non-compliance. This section of the guide outlines the responsible lending obligations and gives an overview of our guidance. It also explains what kinds of lending and credit activities are not covered by the responsible lending obligations.",
+          "qas": [
+            {
+              "question": "What are the obligations of a credit licensee around responsible lending?",
+              "id": "aae57aac-8246-48e5-ba01-f58185edaca4",
+              "answers": [
+                {
+                  "answer_start": 148,
+                  "text": "must not enter into or assist a consumer with a credit product that is unsuitable for them"
+                }
+              ]
+            },
+            {
+              "question": "What is the purpose of regulatory guide 209?",
+              "id": "623ddfda-851b-4a8c-acb7-e5598558ff2f",
+              "answers": [
+                {
+                  "answer_start": 345,
+                  "text": "sets out ASIC\u2019s views on what the obligations require and steps you can take to minimise the risk of non-compliance"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
