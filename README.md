@@ -3,7 +3,7 @@
 ## Project Description
 
 ### What Does It Do
-WordStash is a platform that automatically extracts text from documents and stores it in a searchable format. It tranforms documents into data that can be used for machine learning purposes.
+WordStash is a platform that automatically extracts text from documents and stores it in a searchable format. It transforms documents into data that can be used for machine learning purposes.
 
 The transformation process occurs in 4 stages - [Document Parsing](#document-parsing), [Payload Publishing](#payload-publishing), [Payload Conversion](#payload-conversion) and [Data Storage](#data-storage).
 
