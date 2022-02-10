@@ -1,0 +1,49 @@
+on:
+  push:
+    branches: 
+      - master
+
+name: word-stash
+
+jobs:
+  deploy-lambda-packages:
+    runs-on: ubuntu-latest
+    env:
+      LAMBDA_PACKAGES_S3_BUCKET: word-stash-lambda-packages-bucket
+      IMPLETER_CONVERTERS_LAMBDA_LAYER_ZIP_S3_KEY: impleter_converters_lambda_layer.zip
+      IMPLETER_CONVERTERS_SOURCE_ZIP_S3_KEY: impleter_converters_lambda.zip
+      IMPLETER_PARSERS_LAMBDA_LAYER_ZIP_S3_KEY: impleter_parsers_lambda_layer.zip
+      IMPLETER_PARSERS_SOURCE_ZIP_S3_KEY: impleter_parsers_lambda.zip
+      IMPLETER_PUBLISHERS_LAMBDA_LAYER_ZIP_S3_KEY: impleter_publishers_lambda_layer.zip
+      IMPLETER_PUBLISHERS_SOURCE_ZIP_S3_KEY: impleter_publishers_lambda.zip
+    steps:
+      - name: checkout-repo
+        uses: actions/checkout@v2
+
+      - name: configure-aws-creds-dev
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.CORTICAI_DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CORTICAI_DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: word-stash-cicd-deploy-role
+          role-duration-seconds: 7200
+          role-session-name: cicd-deploy-aws-session
+    
+      - name: test
+        run: make test
+
+      - name: validate-lambda-packages-cf
+        run: make validate-lambda-packages-cf
+
+      - name: deploy-lambda-packages-cf
+        run: make deploy-lambda-packages-cf
+  
+      - name: create-and-upload-lambda-packages
+        run: make create-and-upload-lambda-packages
+
+      - name: validate-word-stash-cf
+        run: make validate-word-stash-cf
+
+      - name: deploy-word-stash-cf
+        run: make deploy-word-stash-cf
